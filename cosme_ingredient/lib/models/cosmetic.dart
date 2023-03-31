@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Cosmetic {
   final String id;
   final String name;
@@ -26,6 +28,27 @@ class Cosmetic {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': name,
+      'brand': brand,
+      'imageUrl': imageUrl,
+      'ingredients': ingredients,
+    };
+  }
+
+  // FirestoreのドキュメントをCosmeticオブジェクトに変換する
+  factory Cosmetic.fromDocument(DocumentSnapshot doc) {
+    return Cosmetic(
+      id: doc.id,
+      name: doc['name'],
+      brand: doc['brand'],
+      imageUrl: doc['imageUrl'],
+      ingredients: doc['ingredients'],
+    );
+  }
+
+  // CosmeticオブジェクトをFirestoreのドキュメントに変換する
+  Map<String, dynamic> toDocument() {
+    return {
       'name': name,
       'brand': brand,
       'imageUrl': imageUrl,

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosme_ingredient/models/cosmetic.dart';
-
+import 'package:cosme_ingredient/services/firestore_service.dart';
 import 'detail_screen.dart';
 
 class AddCosmeticScreen extends StatefulWidget {
@@ -13,12 +13,13 @@ class AddCosmeticScreen extends StatefulWidget {
 
 class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _firestoreService = FirestoreService();
   String _name = '';
   String _brand = '';
   String _ingredients = '';
   String _imageUrl = '';
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -31,6 +32,7 @@ class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
       );
 
       // Save the new cosmetic to the database (this part will be implemented later)
+      await _firestoreService.addCosmetic(newCosmetic);
 
       // Pop the screen and return the newCosmetic object
       Navigator.of(context).push(
