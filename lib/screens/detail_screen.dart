@@ -27,6 +27,9 @@ class CosmeticDetailScreen extends StatelessWidget {
                     cosmetic.imageUrl,
                     height: 200,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return CircleAvatar();
+                    },
                   ),
                 ),
               SizedBox(height: 16),
@@ -45,7 +48,7 @@ class CosmeticDetailScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              ...cosmetic.ingredients.split(',').map((ingredient) {
+              ...cosmetic.ingredients.map((ingredient) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 4),
                   child: Text(ingredient),

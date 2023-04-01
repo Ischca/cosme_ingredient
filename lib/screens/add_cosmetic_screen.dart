@@ -18,6 +18,7 @@ class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
   String _brand = '';
   String _ingredients = '';
   String _imageUrl = '';
+  String _description = '';
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -28,8 +29,12 @@ class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
         name: _name,
         brand: _brand,
         imageUrl: _imageUrl,
-        ingredients: _ingredients,
+        ingredients: Cosmetic.detectSeparators(_ingredients),
+        description: _description,
+        documentSnapshot: null,
       );
+
+      print(newCosmetic.ingredients);
 
       // Save the new cosmetic to the database (this part will be implemented later)
       await _firestoreService.addCosmetic(newCosmetic);
