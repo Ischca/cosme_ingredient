@@ -8,7 +8,6 @@ import '../services/firestore_service.dart';
 import '../widgets/search_bar.dart';
 import 'package:cosme_ingredient/widgets/filter_widget.dart';
 
-
 class SearchScreen extends StatefulWidget {
   SearchScreen();
 
@@ -19,10 +18,46 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<Cosmetic> searchResults = [];
   final _firestoreService = FirestoreService();
+  List<String> allBrands = [
+    '資生堂',
+    'ランコム',
+    'エスティローダー',
+    'ディオール',
+    'クリニーク',
+    'シャネル',
+    'SK-II',
+    'キールズ',
+    'ロレアル',
+    'メイベリン',
+  ];
+  List<String> allTags = [
+    'ファンデーション',
+    'マスカラ',
+    'リップスティック',
+    'クレンジング',
+    '化粧水',
+    '乳液',
+    '日焼け止め',
+    '美容液',
+    'アイクリーム',
+    'ピーリング',
+  ];
+  List<String> allIngredients =  [
+    'ヒアルロン酸',
+    'ナイアシンアミド',
+    'レチノール',
+    'ビタミンC',
+    'グリセリン',
+    'アロエベラ',
+    'サリチル酸',
+    'グリコール酸',
+    'セラミド',
+    'ペプチド',
+  ];
   List<String> _selectedBrands = [];
   List<String> _selectedTags = [];
   List<String> _selectedIngredients = [];
-  DocumentSnapshot? _lastDocument;
+
 
   @override
   void initState() {
@@ -31,25 +66,60 @@ class _SearchScreenState extends State<SearchScreen> {
     _loadResults();
   }
 
-  Future<void> _loadResults() async {
-    final results = await _firestoreService.searchCosmeticsWithFilters(
-      brands: _selectedBrands,
-      tags: _selectedTags,
-      ingredients: _selectedIngredients,
-      limit: 10,
-      lastDocument: _lastDocument,
-    );
-    setState(() {
-      searchResults.addAll(results);
-      if (results.isNotEmpty) {
-        _lastDocument = results.last.documentSnapshot;
+  List<Cosmetic> _filterResults(List<Cosmetic> results) {
+    return results.where((cosmetic) {
+      if (_selectedBrands.isNotEmpty && !_selectedBrands.contains(cosmetic.brand)) {
+        return false;
       }
+      if (_selectedTags.isNotEmpty && !_selectedTags.any((tag) => cosmetic.tags.contains(tag))) {
+        return false;
+      }
+      if (_selectedIngredients.isNotEmpty && !_selectedIngredients.any((ingredient) => cosmetic.ingredients.contains(ingredient))) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
+  Future<void> _loadResults() async {
+    final results = await _firestoreService.getCosmetics();
+    final filteredResults = _filterResults(results);
+
+    setState(() {
+      searchResults = filteredResults;
     });
   }
 
-  // Future<void> _searchCosmetics(searchTerm) async {
-  //   searchResults = await _firestoreService.searchCosmetics(searchTerm);
-  // }
+  void _openFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return FilterWidget(
+          allBrands: allBrands,
+          allTags: allTags,
+          allIngredients: allIngredients,
+          onChanged: (filters) {
+            _selectedBrands = filters.brands;
+            _selectedTags = filters.tags;
+            _selectedIngredients = filters.ingredients;
+            _applyFilters();
+          },
+          initialSelection: FilterSelection(
+            brands: _selectedBrands,
+            tags: _selectedTags,
+            ingredients: _selectedIngredients,
+          ),
+        );
+      },
+    );
+  }
+
+  void _applyFilters() {
+    setState(() {
+      searchResults.clear();
+    });
+    _loadResults();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,44 +135,27 @@ class _SearchScreenState extends State<SearchScreen> {
             color: CupertinoColors.systemGrey,
           ),
         ),
-// middle: SearchBar(
-// onSubmitted: (value) {
-// setState(() {
-// _searchCosmetics(value);
-// });
-// },
-// ),
+        // middle: SearchBar(
+        // onSubmitted: (value) {
+        // setState(() {
+        // _searchCosmetics(value);
+        // });
+        // },
         border: null,
         backgroundColor: Colors.white,
         transitionBetweenRoutes: false,
         automaticallyImplyLeading: false,
-// trailing: GestureDetector(
-// onTap: () {
-// Navigator.pop(context);
-// },
-// child: Icon(
-// CupertinoIcons.clear,
-// color: CupertinoColors.systemGrey,
-// ),
-// ),
+        trailing: GestureDetector(
+          onTap: _openFilterDialog,
+          child: Icon(
+            // CupertinoIcons.clear,
+            CupertinoIcons.slider_horizontal_3,
+            color: CupertinoColors.systemGrey,
+          ),
+        ),
       ),
       child: Column(
         children: [
-          FilterWidget(
-            brands: _selectedBrands,
-            tags: _selectedTags,
-            ingredients: _selectedIngredients,
-            onChanged: (filters) {
-              setState(() {
-                _selectedBrands = filters.brands;
-                _selectedTags = filters.tags;
-                _selectedIngredients = filters.ingredients;
-                searchResults.clear();
-                _lastDocument = null;
-              });
-              _loadResults();
-            },
-          ),
           Expanded(
             child: NotificationListener<ScrollNotification>(
               onNotification: (scrollNotification) {
