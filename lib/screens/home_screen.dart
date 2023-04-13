@@ -4,6 +4,7 @@ import 'package:cosme_ingredient/screens/search_screen.dart';
 import 'package:cosme_ingredient/widgets/search_bar.dart';
 import 'package:cosme_ingredient/services/firestore_service.dart';
 import 'package:cosme_ingredient/models/cosmetic.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/cosmetic_card.dart';
 import 'detail_screen.dart';
@@ -14,12 +15,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _firestoreService = FirestoreService();
+  late final FirestoreService _firestoreService;
   List<Cosmetic> _cosmetics = [];
 
   @override
   void initState() {
     super.initState();
+    _firestoreService = Provider.of<FirestoreService>(context, listen: false);
   }
 
   Future<void> _getCosmetics() async {

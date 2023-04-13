@@ -18,10 +18,10 @@ class Cosmetic {
     required this.ingredients,
     this.tags = const [],
     this.description = '',
-    required this.documentSnapshot,
+    this.documentSnapshot,
   });
 
-  factory Cosmetic.fromJson(Map<String, dynamic> json, {required DocumentSnapshot documentSnapshot}) {
+  factory Cosmetic.fromJson(Map<String, dynamic> json, {DocumentSnapshot? documentSnapshot}) {
     return Cosmetic(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
@@ -43,7 +43,6 @@ class Cosmetic {
       'ingredients': ingredients,
       'tags': tags,
       'description': description,
-      'documentSnapshot': documentSnapshot,
     };
   }
 
@@ -70,7 +69,6 @@ class Cosmetic {
       'ingredients': ingredients,
       'tags': tags,
       'description': description,
-      'documentSnapshot': documentSnapshot,
     };
   }
 

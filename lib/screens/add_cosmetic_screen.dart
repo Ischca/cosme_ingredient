@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cosme_ingredient/models/cosmetic.dart';
 import 'package:cosme_ingredient/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 import 'detail_screen.dart';
 
 class AddCosmeticScreen extends StatefulWidget {
@@ -13,12 +14,18 @@ class AddCosmeticScreen extends StatefulWidget {
 
 class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firestoreService = FirestoreService();
+  late final FirestoreService _firestoreService;
   String _name = '';
   String _brand = '';
   String _ingredients = '';
   String _imageUrl = '';
   String _description = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _firestoreService = Provider.of<FirestoreService>(context, listen: false);
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -49,6 +56,7 @@ class _AddCosmeticScreenState extends State<AddCosmeticScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _firestoreService = Provider.of<FirestoreService>(context);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('成分を分析するコスメを登録します'),

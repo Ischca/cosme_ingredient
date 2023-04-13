@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cosme_ingredient/models/cosmetic.dart';
 import 'package:cosme_ingredient/widgets/cosmetic_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../services/firestore_service.dart';
 import '../widgets/search_bar.dart';
@@ -17,7 +18,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   List<Cosmetic> searchResults = [];
-  final _firestoreService = FirestoreService();
+  late final FirestoreService _firestoreService;
   List<String> allBrands = [
     '資生堂',
     'ランコム',
@@ -58,11 +59,10 @@ class _SearchScreenState extends State<SearchScreen> {
   List<String> _selectedTags = [];
   List<String> _selectedIngredients = [];
 
-
   @override
   void initState() {
     super.initState();
-
+    _firestoreService = Provider.of<FirestoreService>(context, listen: false);
     _loadResults();
   }
 
